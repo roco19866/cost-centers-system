@@ -1,6 +1,6 @@
 /* ========================================================
    نظام تفصيلي حسابات المراكز - Application Logic
-   فلاتر احترافية شاملة ومتقدمة
+   فلاتر احترافية شاملة مع خيارات متعددة (Multi-Select)
    ======================================================== */
 
 // قاعدة بيانات المعاملات المتكاملة
@@ -187,7 +187,9 @@ const fullTransactionsData = [
     }
 ];
 
-// المتغيرات الحالية للفلترة
+// المتغيرات لحفظ الخيارات المتعددة
+let selectedCenters = new Set();
+let selectedAccounts = new Set();
 let currentFilteredRecords = [];
 
 // دالة تنسيق الأرقام
@@ -279,10 +281,8 @@ function updateUnassignedCountBadge() {
     if (badge) badge.textContent = unassignedCount;
 }
 
-// تطبيق جميع الفلاتر المتقدمة
+// تطبيق جميع الفلاتر المتقدمة (بما فيها الخيارات المتعددة)
 function applyFilters() {
-    const costCenter = document.getElementById('selCostCenter').value;
-    const account = document.getElementById('selAccount').value;
     const unassignedOnly = document.getElementById('chkUnassignedOnly').checked;
     const fromDate = document.getElementById('fromDate').value;
     const toDate = document.getElementById('toDate').value;
@@ -297,17 +297,19 @@ function applyFilters() {
             return false;
         }
 
-        // فلتر مركز التكلفة
-        if (costCenter === 'unassigned' && item.costCenterCode !== null) {
-            return false;
-        }
-        if (costCenter !== 'all' && costCenter !== 'unassigned' && item.costCenterCode !== costCenter) {
-            return false;
+        // فلتر مراكز التكلفة متعدد الخيارات
+        if (selectedCenters.size > 0) {
+            const itemCenterKey = item.costCenterCode ? item.costCenterCode : 'unassigned';
+            if (!selectedCenters.has(itemCenterKey)) {
+                return false;
+            }
         }
 
-        // فلتر الحساب
-        if (account !== 'all' && item.accountCode !== account) {
-            return false;
+        // فلتر الحسابات متعدد الخيارات
+        if (selectedAccounts.size > 0) {
+            if (!selectedAccounts.has(item.accountCode)) {
+                return false;
+            }
         }
 
         // فلتر التاريخ
@@ -318,7 +320,7 @@ function applyFilters() {
             return false;
         }
 
-        // فلتر البحث في المبلغ (مدين أو دائن أو إجمالي الحركة)
+        // فلتر البحث في المبلغ
         const itemAmount = Math.max(item.debit, item.credit);
         if (minAmount !== null && itemAmount < minAmount) {
             return false;
@@ -342,7 +344,7 @@ function applyFilters() {
     });
 
     // تحديث ترويسة الحساب بالجدول
-    updateAccountHeader(account);
+    updateAccountHeader();
 
     // حساب الرصيد التراكمي
     currentFilteredRecords = calculateBalances(filtered);
@@ -357,15 +359,13 @@ function applyFilters() {
 function updateActiveFilterBadge() {
     const badge = document.getElementById('activeFilterBadge');
     const unassignedOnly = document.getElementById('chkUnassignedOnly').checked;
-    const costCenter = document.getElementById('selCostCenter').value;
-    const account = document.getElementById('selAccount').value;
     const minAmount = document.getElementById('numMinAmount').value;
     const maxAmount = document.getElementById('numMaxAmount').value;
 
     let activeTags = [];
     if (unassignedOnly) activeTags.push('المصروفات غير المربوطة');
-    if (costCenter !== 'all') activeTags.push('مركز محدد');
-    if (account !== 'all') activeTags.push('حساب محدد');
+    if (selectedCenters.size > 0) activeTags.push(`مراكز مختارة (${selectedCenters.size})`);
+    if (selectedAccounts.size > 0) activeTags.push(`حسابات مختارة (${selectedAccounts.size})`);
     if (minAmount || maxAmount) activeTags.push('فلتر المبلغ');
 
     if (activeTags.length > 0) {
@@ -382,39 +382,148 @@ function updateActiveFilterBadge() {
 }
 
 // تحديث ترويسة الحساب المعروض في الجدول
-function updateAccountHeader(accountCode) {
+function updateAccountHeader() {
     const headerName = document.getElementById('accountHeaderName');
     const headerCode = document.getElementById('accountHeaderCode');
 
-    if (accountCode === 'all') {
-        headerName.textContent = 'اسم الحساب : جميع الحسابات التفصيلية';
-        headerCode.textContent = 'رقم الحساب : حسابات مراكز التكلفة المجمعة';
-    } else {
-        const match = fullTransactionsData.find(i => i.accountCode === accountCode);
+    if (selectedAccounts.size === 1) {
+        const code = Array.from(selectedAccounts)[0];
+        const match = fullTransactionsData.find(i => i.accountCode === code);
         if (match) {
             headerName.textContent = `اسم الحساب : ${match.accountName}`;
             headerCode.textContent = `رقم الحساب : ${match.accountCode}`;
         }
+    } else if (selectedAccounts.size > 1) {
+        headerName.textContent = `اسم الحساب : تم اختيار (${selectedAccounts.size}) حسابات محاسبية متعددة`;
+        headerCode.textContent = `أرقام الحسابات : ${Array.from(selectedAccounts).join(', ')}`;
+    } else {
+        headerName.textContent = 'اسم الحساب : جميع الحسابات التفصيلية';
+        headerCode.textContent = 'رقم الحساب : حسابات مراكز التكلفة المجمعة';
     }
 }
 
-// إعادة تعيين جميع الفلاتر
-function resetAllFilters() {
-    document.getElementById('selView').value = 'detailed';
-    document.getElementById('selYear').value = '2026';
-    document.getElementById('selCostCenter').value = 'all';
-    document.getElementById('selAccount').value = 'all';
-    document.getElementById('selDatePreset').value = 'custom';
-    document.getElementById('fromDate').value = '2026-01-01';
-    document.getElementById('toDate').value = '2026-12-31';
-    document.getElementById('chkUnassignedOnly').checked = false;
-    document.getElementById('numMinAmount').value = '';
-    document.getElementById('numMaxAmount').value = '';
-    document.getElementById('selAmountPreset').value = 'all';
-    document.getElementById('txtSearchKeyword').value = '';
+// ================= إدارة القوائم المنسدلة المتعددة (Multi-Select Logic) =================
+function setupMultiSelect(config) {
+    const container = document.getElementById(config.containerId);
+    const trigger = document.getElementById(config.triggerId);
+    const display = document.getElementById(config.displayId);
+    const panel = document.getElementById(config.panelId);
+    const clearBtn = document.getElementById(config.clearBtnId);
+    const searchInput = document.getElementById(config.searchInputId);
+    const selectAllBtn = document.getElementById(config.selectAllBtnId);
+    const deselectAllBtn = document.getElementById(config.deselectAllBtnId);
+    const checkboxes = container.querySelectorAll('.multiselect-list input[type="checkbox"]');
 
-    applyFilters();
-    showToast('تمت إعادة تعيين جميع الفلاتر');
+    // فتح/إغلاق القائمة
+    trigger.addEventListener('click', (e) => {
+        if (e.target.closest('.clear-selection-btn')) return;
+        const isOpen = panel.classList.contains('show');
+        // إغلاق أي قوائم مفتوحة أخرى أولاً
+        document.querySelectorAll('.multiselect-panel').forEach(p => p.classList.remove('show'));
+        document.querySelectorAll('.multiselect-trigger').forEach(t => t.classList.remove('open'));
+
+        if (!isOpen) {
+            panel.classList.add('show');
+            trigger.classList.add('open');
+            if (searchInput) searchInput.focus();
+        }
+    });
+
+    // منع إغلاق القائمة عند النقر بداخلها
+    panel.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // إغلاق عند النقر خارج العنصر
+    document.addEventListener('click', (e) => {
+        if (!container.contains(e.target)) {
+            panel.classList.remove('show');
+            trigger.classList.remove('open');
+        }
+    });
+
+    // تحديث الواجهة عند تغيير الاختيار
+    function updateDisplay() {
+        const selectedSet = config.selectedSet;
+        if (selectedSet.size === 0) {
+            display.innerHTML = `<span class="placeholder-text">${config.placeholder}</span>`;
+            if (clearBtn) clearBtn.style.display = 'none';
+        } else if (selectedSet.size === 1) {
+            const val = Array.from(selectedSet)[0];
+            const cb = Array.from(checkboxes).find(c => c.value === val);
+            const label = cb ? (cb.getAttribute('data-label') || cb.value) : val;
+            display.innerHTML = `<span class="ms-chip">${label}</span>`;
+            if (clearBtn) clearBtn.style.display = 'flex';
+        } else {
+            display.innerHTML = `
+                <span class="ms-chip-count">${selectedSet.size} مختارة</span>
+                <span style="font-size: 11.5px; color: #475569; font-weight: 600;">(خيارات متعددة)</span>
+            `;
+            if (clearBtn) clearBtn.style.display = 'flex';
+        }
+    }
+
+    // تفاعل المربعات (Checkboxes)
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            if (cb.checked) {
+                config.selectedSet.add(cb.value);
+            } else {
+                config.selectedSet.delete(cb.value);
+            }
+            updateDisplay();
+            applyFilters();
+        });
+    });
+
+    // زر تحديد الكل
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', () => {
+            checkboxes.forEach(cb => {
+                cb.checked = true;
+                config.selectedSet.add(cb.value);
+            });
+            updateDisplay();
+            applyFilters();
+        });
+    }
+
+    // زر إلغاء التحديد
+    if (deselectAllBtn) {
+        deselectAllBtn.addEventListener('click', () => {
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+            });
+            config.selectedSet.clear();
+            updateDisplay();
+            applyFilters();
+        });
+    }
+
+    // زر المسح السريع في شريط العرض
+    if (clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            checkboxes.forEach(cb => cb.checked = false);
+            config.selectedSet.clear();
+            updateDisplay();
+            applyFilters();
+        });
+    }
+
+    // البحث داخل عناصر القائمة
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase().trim();
+            const items = container.querySelectorAll('.multiselect-item');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(q) ? 'flex' : 'none';
+            });
+        });
+    }
+
+    return { updateDisplay, checkboxes };
 }
 
 // مسح قيمة حقل معين
@@ -425,6 +534,35 @@ function clearInput(id) {
         el.focus();
         applyFilters();
     }
+}
+
+// إعادة تعيين جميع الفلاتر
+function resetAllFilters() {
+    document.getElementById('selView').value = 'detailed';
+    document.getElementById('selYear').value = '2026';
+    document.getElementById('selDatePreset').value = 'custom';
+    document.getElementById('fromDate').value = '2026-01-01';
+    document.getElementById('toDate').value = '2026-12-31';
+    document.getElementById('chkUnassignedOnly').checked = false;
+    document.getElementById('numMinAmount').value = '';
+    document.getElementById('numMaxAmount').value = '';
+    document.getElementById('selAmountPreset').value = 'all';
+    document.getElementById('txtSearchKeyword').value = '';
+
+    // مسح مراكز التكلفة المتعددة
+    selectedCenters.clear();
+    document.querySelectorAll('#multiCenterList input[type="checkbox"]').forEach(c => c.checked = false);
+    document.getElementById('multiCenterDisplay').innerHTML = `<span class="placeholder-text">جميع مراكز التكلفة</span>`;
+    document.getElementById('clearCenterBtn').style.display = 'none';
+
+    // مسح الحسابات المتعددة
+    selectedAccounts.clear();
+    document.querySelectorAll('#multiAccountList input[type="checkbox"]').forEach(c => c.checked = false);
+    document.getElementById('multiAccountDisplay').innerHTML = `<span class="placeholder-text">جميع الحسابات</span>`;
+    document.getElementById('clearAccountBtn').style.display = 'none';
+
+    applyFilters();
+    showToast('تمت إعادة تعيين جميع الفلاتر');
 }
 
 // إظهار إشعار Toast
@@ -459,6 +597,34 @@ function exportToExcel() {
 
 // تهيئة الأحداث والتفاعل
 document.addEventListener('DOMContentLoaded', () => {
+    // إعداد القائمة المتعددة لمراكز التكلفة
+    const centerMS = setupMultiSelect({
+        containerId: 'multiCenterContainer',
+        triggerId: 'multiCenterTrigger',
+        displayId: 'multiCenterDisplay',
+        panelId: 'multiCenterPanel',
+        clearBtnId: 'clearCenterBtn',
+        searchInputId: 'searchCenterInput',
+        selectAllBtnId: 'selectAllCenters',
+        deselectAllBtnId: 'deselectAllCenters',
+        placeholder: 'جميع مراكز التكلفة',
+        selectedSet: selectedCenters
+    });
+
+    // إعداد القائمة المتعددة للحسابات
+    const accountMS = setupMultiSelect({
+        containerId: 'multiAccountContainer',
+        triggerId: 'multiAccountTrigger',
+        displayId: 'multiAccountDisplay',
+        panelId: 'multiAccountPanel',
+        clearBtnId: 'clearAccountBtn',
+        searchInputId: 'searchAccountInput',
+        selectAllBtnId: 'selectAllAccounts',
+        deselectAllBtnId: 'deselectAllAccounts',
+        placeholder: 'جميع الحسابات',
+        selectedSet: selectedAccounts
+    });
+
     // حساب عدد الحركات غير المربوطة
     updateUnassignedCountBadge();
 
@@ -483,21 +649,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // زر التصدير
     document.getElementById('btnExport').addEventListener('click', exportToExcel);
 
-    // تفعيل فوري عند تغيير فلاتر الاختيار
-    ['selCostCenter', 'selAccount', 'selView', 'selYear'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('change', applyFilters);
-    });
-
     // تبديل فلتر المصروفات غير المربوطة
     const chkUnassigned = document.getElementById('chkUnassignedOnly');
     if (chkUnassigned) {
         chkUnassigned.addEventListener('change', () => {
+            const unassignedCheckbox = document.querySelector('#multiCenterList input[value="unassigned"]');
             if (chkUnassigned.checked) {
-                document.getElementById('selCostCenter').value = 'unassigned';
-                showToast('عرض المصروفات الغير مربوطة بمراكز التكلفة فقط');
+                // تحديد فقط "غير مربوط" في قائمة المراكز
+                centerMS.checkboxes.forEach(cb => {
+                    cb.checked = (cb.value === 'unassigned');
+                });
+                selectedCenters.clear();
+                selectedCenters.add('unassigned');
+                centerMS.updateDisplay();
+                showToast('عرض المصروفات الغير مربوطة بمراكز التكلفة');
             } else {
-                document.getElementById('selCostCenter').value = 'all';
+                if (unassignedCheckbox) unassignedCheckbox.checked = false;
+                selectedCenters.delete('unassigned');
+                centerMS.updateDisplay();
             }
             applyFilters();
         });
@@ -564,7 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // تصفية عند تغيير المبالغ يدوياً
-    ['numMinAmount', 'numMaxAmount', 'fromDate', 'toDate'].forEach(id => {
+    ['numMinAmount', 'numMaxAmount', 'fromDate', 'toDate', 'selView', 'selYear'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', applyFilters);
     });

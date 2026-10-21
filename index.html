@@ -134,36 +134,105 @@
                         </div>
                     </div>
 
-                    <!-- Col 3: مركز التكلفة -->
+                    <!-- Col 3: مركز التكلفة (متعدد الخيارات) -->
                     <div class="filter-cell">
-                        <label>فلتر مركز التكلفة</label>
-                        <div class="select-wrapper">
-                            <select id="selCostCenter" class="form-control">
-                                <option value="all" selected>جميع مراكز التكلفة</option>
-                                <option value="unassigned">-- غير مربوط بمركز تكلفة --</option>
-                                <option value="CC-101">101 - الرعاية الاجتماعية</option>
-                                <option value="CC-102">102 - نادي تراؤف (بنين وبنات)</option>
-                                <option value="CC-103">103 - الإدارة العامة</option>
-                                <option value="CC-104">104 - التسويق وتنمية الموارد</option>
-                                <option value="CC-105">105 - الاستثمار والأوقاف</option>
-                            </select>
-                            <span class="material-symbols-outlined select-arrow">expand_more</span>
+                        <label>فلتر مركز التكلفة (خيارات متعددة)</label>
+                        <div class="multiselect-container" id="multiCenterContainer">
+                            <div class="multiselect-trigger" id="multiCenterTrigger">
+                                <div class="multiselect-display" id="multiCenterDisplay">
+                                    <span class="placeholder-text">جميع مراكز التكلفة</span>
+                                </div>
+                                <div class="multiselect-controls">
+                                    <span class="clear-selection-btn" id="clearCenterBtn" title="مسح التحديد" style="display: none;">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </span>
+                                    <span class="material-symbols-outlined select-arrow">expand_more</span>
+                                </div>
+                            </div>
+                            <div class="multiselect-panel" id="multiCenterPanel">
+                                <div class="multiselect-search">
+                                    <input type="text" id="searchCenterInput" placeholder="بحث في المراكز...">
+                                </div>
+                                <div class="multiselect-actions">
+                                    <button type="button" class="btn-ms-action" id="selectAllCenters">تحديد الكل</button>
+                                    <button type="button" class="btn-ms-action" id="deselectAllCenters">إلغاء التحديد</button>
+                                </div>
+                                <div class="multiselect-list" id="multiCenterList">
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="CC-101" data-label="101 - الرعاية الاجتماعية">
+                                        <span>101 - الرعاية الاجتماعية</span>
+                                    </label>
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="CC-102" data-label="102 - نادي تراؤف (بنين وبنات)">
+                                        <span>102 - نادي تراؤف (بنين وبنات)</span>
+                                    </label>
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="CC-103" data-label="103 - الإدارة العامة">
+                                        <span>103 - الإدارة العامة</span>
+                                    </label>
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="CC-104" data-label="104 - التسويق وتنمية الموارد">
+                                        <span>104 - التسويق وتنمية الموارد</span>
+                                    </label>
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="CC-105" data-label="105 - الاستثمار والأوقاف">
+                                        <span>105 - الاستثمار والأوقاف</span>
+                                    </label>
+                                    <label class="multiselect-item unassigned-item">
+                                        <input type="checkbox" value="unassigned" data-label="غير مربوط بمركز تكلفة">
+                                        <span style="color: #e11d48; font-weight: 700;">غير مربوط بمركز تكلفة</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Col 4: الحساب -->
+                    <!-- Col 4: الحساب (متعدد الخيارات) -->
                     <div class="filter-cell">
-                        <label>فلتر الحساب</label>
-                        <div class="select-wrapper">
-                            <select id="selAccount" class="form-control">
-                                <option value="all" selected>جميع الحسابات</option>
-                                <option value="4210200310">4210200310 - مصاريف برامج وأنشطة (أثاث للأسر)</option>
-                                <option value="4210200320">4210200320 - مصاريف برامج وأنشطة (أجهزة كهربائية)</option>
-                                <option value="4210200330">4210200330 - مصاريف دعم سكني للأسر</option>
-                                <option value="4210200340">4210200340 - مصاريف كسوة شتاء وحقيبة</option>
-                                <option value="4210100100">4210100100 - رواتب ومكافآت العاملين</option>
-                            </select>
-                            <span class="material-symbols-outlined select-arrow">expand_more</span>
+                        <label>فلتر الحساب (خيارات متعددة)</label>
+                        <div class="multiselect-container" id="multiAccountContainer">
+                            <div class="multiselect-trigger" id="multiAccountTrigger">
+                                <div class="multiselect-display" id="multiAccountDisplay">
+                                    <span class="placeholder-text">جميع الحسابات</span>
+                                </div>
+                                <div class="multiselect-controls">
+                                    <span class="clear-selection-btn" id="clearAccountBtn" title="مسح التحديد" style="display: none;">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </span>
+                                    <span class="material-symbols-outlined select-arrow">expand_more</span>
+                                </div>
+                            </div>
+                            <div class="multiselect-panel" id="multiAccountPanel">
+                                <div class="multiselect-search">
+                                    <input type="text" id="searchAccountInput" placeholder="بحث في الحسابات...">
+                                </div>
+                                <div class="multiselect-actions">
+                                    <button type="button" class="btn-ms-action" id="selectAllAccounts">تحديد الكل</button>
+                                    <button type="button" class="btn-ms-action" id="deselectAllAccounts">إلغاء التحديد</button>
+                                </div>
+                                <div class="multiselect-list" id="multiAccountList">
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="4210200310" data-label="4210200310 - أثاث للأسر">
+                                        <span>4210200310 - مصاريف برامج وأنشطة (أثاث للأسر)</span>
+                                    </label>
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="4210200320" data-label="4210200320 - أجهزة كهربائية">
+                                        <span>4210200320 - مصاريف برامج وأنشطة (أجهزة كهربائية)</span>
+                                    </label>
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="4210200330" data-label="4210200330 - دعم سكني">
+                                        <span>4210200330 - مصاريف دعم سكني للأسر</span>
+                                    </label>
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="4210200340" data-label="4210200340 - كسوة شتاء">
+                                        <span>4210200340 - مصاريف كسوة شتاء وحقيبة</span>
+                                    </label>
+                                    <label class="multiselect-item">
+                                        <input type="checkbox" value="4210100100" data-label="4210100100 - رواتب ومكافآت">
+                                        <span>4210100100 - رواتب ومكافآت ومصروفات إدارية</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
