@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفصيلي حسابات المراكز | نظام تراؤف</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Green Navigation Bar -->
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="nav-content">
+                <div class="nav-line-1">
+                    <span class="nav-item">مركز عمليات المستفيدين</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">الرعاية الاجتماعية</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">نادي تراؤف ( للبنين - للبنات )</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">التسويق</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">الاستثمار</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">الاستراتيجية و التميز المؤسسي</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">الموارد البشرية</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">التقارير</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">الدعم المؤسسي</span>
+                    <span class="nav-sep">-</span>
+                    <span class="nav-item">الطلبات</span>
+                </div>
+                <div class="nav-line-2">
+                    <span class="nav-item">الجمعية العمومية ومجلس الإدارة</span>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="nav-btn" title="الإشعارات">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="nav-btn" title="الرئيسية">
+                    <span class="material-symbols-outlined">home</span>
+                </button>
+                <button class="nav-btn" title="التطبيقات">
+                    <span class="material-symbols-outlined">apps</span>
+                </button>
+                <button class="nav-btn logout-btn" title="تسجيل الخروج">
+                    <span class="material-symbols-outlined">power_settings_new</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="page-wrapper">
+        <div class="report-card">
+            
+            <!-- Toolbar & Title Header -->
+            <div class="report-header">
+                <div class="report-title">
+                    <h2>تفصيلي حسابات المراكز</h2>
+                    <span class="active-filter-badge" id="activeFilterBadge">عرض الكل</span>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn excel-btn" id="btnExport" title="تصدير Excel">
+                        <span class="material-symbols-outlined">description</span>
+                        <span class="btn-text">تصدير Excel</span>
+                    </button>
+                    <button class="action-btn print-btn" id="btnPrint" onclick="window.print()" title="طباعة">
+                        <span class="material-symbols-outlined">print</span>
+                    </button>
+                    <button class="action-btn search-btn" id="btnSearch" title="تحديث وتطبيق الفلتر">
+                        <span class="material-symbols-outlined">refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Enhanced Professional Filter Panel -->
+            <div class="filter-panel">
+                
+                <!-- Quick Filter Tabs -->
+                <div class="quick-filter-bar">
+                    <div class="quick-filter-title">
+                        <span class="material-symbols-outlined">tune</span>
+                        <span>فلاتر البحث الاحترافية</span>
+                    </div>
+
+                    <!-- Shortcut filter for Unassigned / Unallocated Expenses -->
+                    <label class="unassigned-toggle" id="unassignedToggleLabel">
+                        <input type="checkbox" id="chkUnassignedOnly">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">
+                            <span class="material-symbols-outlined">link_off</span>
+                            المصروفات الغير مربوطة بمراكز التكلفة
+                        </span>
+                        <span class="unassigned-count-badge" id="unassignedCountBadge">0</span>
+                    </label>
+                </div>
+
+                <div class="filter-grid">
+                    
+                    <!-- Row 1: General & Hierarchy -->
+                    <!-- Col 1: عرض -->
+                    <div class="filter-cell">
+                        <label>عرض التقرير</label>
+                        <div class="select-wrapper">
+                            <select id="selView" class="form-control">
+                                <option value="detailed" selected>تفصيلي حسابات المراكز</option>
+                                <option value="summary">إجمالي حسابات المراكز</option>
+                            </select>
+                            <span class="material-symbols-outlined select-arrow">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 2: عام -->
+                    <div class="filter-cell">
+                        <label>العام المالي</label>
+                        <div class="select-wrapper">
+                            <select id="selYear" class="form-control">
+                                <option value="all">جميع الأعوام</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                            </select>
+                            <span class="material-symbols-outlined select-arrow">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 3: مركز التكلفة -->
+                    <div class="filter-cell">
+                        <label>فلتر مركز التكلفة</label>
+                        <div class="select-wrapper">
+                            <select id="selCostCenter" class="form-control">
+                                <option value="all" selected>جميع مراكز التكلفة</option>
+                                <option value="unassigned">-- غير مربوط بمركز تكلفة --</option>
+                                <option value="CC-101">101 - الرعاية الاجتماعية</option>
+                                <option value="CC-102">102 - نادي تراؤف (بنين وبنات)</option>
+                                <option value="CC-103">103 - الإدارة العامة</option>
+                                <option value="CC-104">104 - التسويق وتنمية الموارد</option>
+                                <option value="CC-105">105 - الاستثمار والأوقاف</option>
+                            </select>
+                            <span class="material-symbols-outlined select-arrow">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 4: الحساب -->
+                    <div class="filter-cell">
+                        <label>فلتر الحساب</label>
+                        <div class="select-wrapper">
+                            <select id="selAccount" class="form-control">
+                                <option value="all" selected>جميع الحسابات</option>
+                                <option value="4210200310">4210200310 - مصاريف برامج وأنشطة (أثاث للأسر)</option>
+                                <option value="4210200320">4210200320 - مصاريف برامج وأنشطة (أجهزة كهربائية)</option>
+                                <option value="4210200330">4210200330 - مصاريف دعم سكني للأسر</option>
+                                <option value="4210200340">4210200340 - مصاريف كسوة شتاء وحقيبة</option>
+                                <option value="4210100100">4210100100 - رواتب ومكافآت العاملين</option>
+                            </select>
+                            <span class="material-symbols-outlined select-arrow">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Date Filters -->
+                    <!-- Col 1: الفترة الزمنية السريعة -->
+                    <div class="filter-cell">
+                        <label>فترة التاريخ السريعة</label>
+                        <div class="select-wrapper">
+                            <select id="selDatePreset" class="form-control">
+                                <option value="all">كامل الفترة المحددة</option>
+                                <option value="this_month">هذا الشهر (يناير 2026)</option>
+                                <option value="q1">الربع الأول (Q1 2026)</option>
+                                <option value="first_half">النصف الأول 2026</option>
+                                <option value="custom" selected>تحديد يدوي (من - إلى)</option>
+                            </select>
+                            <span class="material-symbols-outlined select-arrow">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 2: من تاريخ -->
+                    <div class="filter-cell">
+                        <label>من تاريخ</label>
+                        <div class="date-input-wrapper">
+                            <input type="date" id="fromDate" class="form-control date-control" value="2026-01-01">
+                            <span class="material-symbols-outlined date-icon">calendar_month</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 3: إلى تاريخ -->
+                    <div class="filter-cell">
+                        <label>إلى تاريخ</label>
+                        <div class="date-input-wrapper">
+                            <input type="date" id="toDate" class="form-control date-control" value="2026-12-31">
+                            <span class="material-symbols-outlined date-icon">calendar_month</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 4: بحث في شرح القيد / المستند -->
+                    <div class="filter-cell">
+                        <label>بحث في النص / القيد</label>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="txtSearchKeyword" class="form-control" placeholder="اكتب للبحث في شرح القيد...">
+                            <span class="material-symbols-outlined search-icon">search</span>
+                            <span class="clear-text-btn" onclick="clearInput('txtSearchKeyword')" title="مسح">
+                                <span class="material-symbols-outlined">close</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Amount Search & Filter -->
+                    <!-- Col 1: من مبلغ (الحد الأدنى) -->
+                    <div class="filter-cell">
+                        <label>من مبلغ (الحد الأدنى)</label>
+                        <div class="amount-input-wrapper">
+                            <input type="number" id="numMinAmount" class="form-control" placeholder="0.00" min="0" step="any">
+                            <span class="amount-unit">ر.س</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 2: إلى مبلغ (الحد الأقصى) -->
+                    <div class="filter-cell">
+                        <label>إلى مبلغ (الحد الأقصى)</label>
+                        <div class="amount-input-wrapper">
+                            <input type="number" id="numMaxAmount" class="form-control" placeholder="بلا حد أقصى" min="0" step="any">
+                            <span class="amount-unit">ر.س</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 3: نطاق المبالغ السريع -->
+                    <div class="filter-cell">
+                        <label>نطاق مبالغ سريع</label>
+                        <div class="select-wrapper">
+                            <select id="selAmountPreset" class="form-control">
+                                <option value="all" selected>جميع المبالغ</option>
+                                <option value="small">أقل من 10,000 ر.س</option>
+                                <option value="medium">من 10,000 إلى 20,000 ر.س</option>
+                                <option value="large">أكثر من 20,000 ر.س</option>
+                            </select>
+                            <span class="material-symbols-outlined select-arrow">expand_more</span>
+                        </div>
+                    </div>
+
+                    <!-- Col 4: أزرار تطبيق الفلتر وإعادة التعيين -->
+                    <div class="filter-cell filter-actions-cell">
+                        <label>&nbsp;</label>
+                        <div class="filter-buttons-group">
+                            <button type="button" class="btn-filter-apply" id="btnApplyFilter">
+                                <span class="material-symbols-outlined">filter_alt</span>
+                                <span>تطبيق الفلتر</span>
+                            </button>
+                            <button type="button" class="btn-filter-reset" id="btnResetFilter" title="إعادة تعيين جميع الفلاتر">
+                                <span class="material-symbols-outlined">restart_alt</span>
+                                <span>إعادة تعيين</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Totals & Statistics Bar (Updated in real-time) -->
+                <div class="summary-stats-bar">
+                    <div class="stat-pill">
+                        <div class="stat-pill-label">إجمالي المدين للمراكز</div>
+                        <div class="stat-pill-value debit" id="boxDebit">0.00</div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="stat-pill-label">إجمالي الدائن للمراكز</div>
+                        <div class="stat-pill-value credit" id="boxCredit">0.00</div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="stat-pill-label">إجمالي الرصيد للمراكز</div>
+                        <div class="stat-pill-value balance" id="boxBalance">0.00</div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="stat-pill-label">عدد الحركات المطابقة</div>
+                        <div class="stat-pill-value count" id="boxCount">0 حركة</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Section Title -->
+            <div class="section-title">
+                <div class="section-title-right">
+                    <h3 id="currentSectionTitle">مصاريف البرامج والأنشطة الاجتماعية المباشرة</h3>
+                    <span class="section-subtitle" id="currentSectionSubtitle">عرض تفصيلي للحركات المحاسبية المربوطة والغير مربوطة بمراكز التكلفة</span>
+                </div>
+                <div class="section-title-left">
+                    <span class="filter-result-tag" id="filterResultTag">عرض 0 من أصل 0 قيد</span>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-responsive">
+                <table class="report-table" id="reportTable">
+                    <thead>
+                        <tr class="table-header-row">
+                            <th style="width: 45px;">م</th>
+                            <th style="width: 105px;">التاريخ</th>
+                            <th style="width: 85px;">الرقم المسلسل</th>
+                            <th style="width: 80px;">رقم القيد</th>
+                            <th style="width: 85px;">رقم المستند</th>
+                            <th>شرح القيد</th>
+                            <th style="width: 170px;">مركز التكلفة</th>
+                            <th style="width: 115px;">مدين</th>
+                            <th style="width: 90px;">دائن</th>
+                            <th style="width: 125px;">الرصيد</th>
+                        </tr>
+                        <tr class="table-account-header">
+                            <td colspan="10">
+                                <div class="account-header-content">
+                                    <div class="account-name-line" id="accountHeaderName">اسم الحساب : مصاريف برامج وأنشطة ماجدة نادية - أثاث للأسر</div>
+                                    <div class="account-num-line" id="accountHeaderCode">رقم الحساب : 4210200310</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Dynamic Records -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
